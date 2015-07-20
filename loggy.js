@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require('path');
 var availableLoggingModules = { };
 
 // Default options
@@ -23,10 +24,15 @@ function getNewLogEntry (message, logLevel) {
   var time =  now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds() + ':' + now.getMilliseconds();
 
   return {
+    "date": date,
+    "time": time,
     "timestamp": date + ' ' + time,
     "level": logLevel,
     "message": message,
-    "origin": process.env.npm_package_name || ''
+    "origin": {
+      'npm_module': process.env.npm_package_name || '',
+      'filename': path.basename(getCallerFile())
+    }
   }
 }
 
@@ -78,4 +84,28 @@ function initializeLoggingModules () {
 function copyToObject(fromObj, toObj) {
   for (var attrname in fromObj)
     toObj[attrname] = fromObj[attrname];
+}
+
+function getCallerFile() {
+    var originalFunc = Error.prepareStackTrace;
+
+    var callerfile;
+    try {
+        var err = new Error();
+        var currentfile;
+
+        Error.prepareStackTrace = function (err, stack) { return stack; };
+
+        currentfile = err.stack.shift().getFileName();
+
+        while (err.stack.length) {
+            callerfile = err.stack.shift().getFileName();
+
+            if(currentfile !== callerfile) break;
+        }
+    } catch (e) {}
+
+    Error.prepareStackTrace = originalFunc;
+
+    return callerfile;
 }

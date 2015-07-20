@@ -1,4 +1,4 @@
 {
-  "name" : "Logger",
-  "main" : "./logger.js"
+  "name" : "Loggy",
+  "main" : "./loggy.js"
 }
