@@ -30,10 +30,9 @@ function getNewLogEntry (message, logLevel) {
   }
 }
 
-initializeLoggingModules();
-
-module.exports.config = function (newOptions) {
+module.exports.initialize = function (newOptions) {
   copyToObject(newOptions, options);
+  initializeLoggingModules();
 }
 
 module.exports.debug = function (message) {
@@ -58,8 +57,8 @@ module.exports.fatal = function (message) {
 
 function pipeToActiveLoggingModules(data) {
   options.targetLoggingModules
-    .forEach(function (loggingModuleName) {
-      availableLoggingModules[loggingModuleName].pipe(data);
+    .forEach(function (loggingModule) {
+      availableLoggingModules[loggingModule.name].pipe(data);
     });
 }
 
@@ -68,11 +67,11 @@ function toModuleName(filename) {
 }
 
 function initializeLoggingModules () {
-  var targetLoggingModules = options.targetLoggingModules;
-  targetLoggingModules.forEach(function (moduleInfo) {
+  options.targetLoggingModules.forEach(function (moduleInfo) {
     var loggingModule = require(__dirname + '/modules/' + moduleInfo.name);
     if (typeof loggingModule.initialize === 'function')
       loggingModule.initialize(moduleInfo.settings);
+    availableLoggingModules[moduleInfo.name] = loggingModule;
   });
 }
 
