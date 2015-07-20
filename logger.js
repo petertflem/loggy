@@ -32,6 +32,10 @@ function getNewLogEntry (message, logLevel) {
 
 initializeLoggingModules();
 
+module.exports.config = function (newOptions) {
+  copyToObject(newOptions, options);
+}
+
 module.exports.debug = function (message) {
   pipeToActiveLoggingModules(getNewLogEntry(message, 'DEBUG'));
 }
@@ -70,4 +74,9 @@ function initializeLoggingModules () {
     if (typeof loggingModule.initialize === 'function')
       loggingModule.initialize(moduleInfo.settings);
   });
+}
+
+function copyToObject(fromObj, toObj) {
+  for (var attrname in fromObj)
+    toObj[attrname] = fromObj[attrname];
 }
