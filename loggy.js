@@ -18,23 +18,7 @@ var options = {
   }
 */
 
-function getNewLogEntry (message, logLevel) {
-  var now = new Date();
-  var date = now.getFullYear() + '.' + (now.getMonth() + 1) + '.' + now.getDate();
-  var time =  now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds() + ':' + now.getMilliseconds();
-
-  return {
-    "date": date,
-    "time": time,
-    "timestamp": date + ' ' + time,
-    "level": logLevel,
-    "message": message,
-    "origin": {
-      'npm_module': process.env.npm_package_name || '',
-      'filename': path.basename(getCallerFile())
-    }
-  }
-}
+/* I want to read a config file from root */
 
 module.exports.initialize = function (newOptions) {
   copyToObject(newOptions, options);
@@ -86,26 +70,46 @@ function copyToObject(fromObj, toObj) {
     toObj[attrname] = fromObj[attrname];
 }
 
+function getStackStrace() {
+  var orig = Error.prepareStackTrace;
+  Error.prepareStackTrace = function(_, stack) {
+      return stack;
+  };
+  var err = new Error;
+  Error.captureStackTrace(err, arguments.callee);
+  var stack = err.stack;
+  Error.prepareStackTrace = orig;
+  return stack;
+}
+
+function getLineNumber() {
+  return getStackStrace()[3].getLineNumber();
+}
+
+function getCallerFunction() {
+  return getStackStrace()[3].getFunctionName();
+}
+
 function getCallerFile() {
-    var originalFunc = Error.prepareStackTrace;
+  return getStackStrace()[3].getFileName();
+}
 
-    var callerfile;
-    try {
-        var err = new Error();
-        var currentfile;
+function getNewLogEntry (message, logLevel) {
+  var now = new Date();
+  var date = now.getFullYear() + '.' + (now.getMonth() + 1) + '.' + now.getDate();
+  var time =  now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds() + ':' + now.getMilliseconds();
 
-        Error.prepareStackTrace = function (err, stack) { return stack; };
-
-        currentfile = err.stack.shift().getFileName();
-
-        while (err.stack.length) {
-            callerfile = err.stack.shift().getFileName();
-
-            if(currentfile !== callerfile) break;
-        }
-    } catch (e) {}
-
-    Error.prepareStackTrace = originalFunc;
-
-    return callerfile;
+  return {
+    "date": date,
+    "time": time,
+    "timestamp": date + ' ' + time,
+    "level": logLevel,
+    "message": message,
+    "origin": {
+      'npm_module': process.env.npm_package_name || '',
+      'filename': path.basename(getCallerFile()),
+      'function': getCallerFunction(),
+      'lineNumnber': getLineNumber()
+    }
+  }
 }
