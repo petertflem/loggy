@@ -103,7 +103,7 @@ function getNewLogEntry (message, logLevel) {
     "date": date,
     "time": time,
     "timestamp": date + ' ' + time,
-    "level": logLevel,
+    "level": logLevel.toLowerCase(),
     "message": message,
     "origin": {
       'npm_module': process.env.npm_package_name || '',
