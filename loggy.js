@@ -100,16 +100,15 @@ function getNewLogEntry (message, logLevel) {
   var time =  now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds() + ':' + now.getMilliseconds();
 
   return {
-    "date": date,
-    "time": time,
-    "timestamp": date + ' ' + time,
-    "level": logLevel.toLowerCase(),
-    "message": message,
-    "origin": {
-      'npm_module': process.env.npm_package_name || '',
-      'filename': path.basename(getCallerFile()),
-      'function': getCallerFunction(),
-      'lineNumnber': getLineNumber()
+    date: date,
+    time: time,
+    logLevel: logLevel.toLowerCase(),
+    message: message,
+    origin: {
+      npmModule: process.env.npm_package_name || '',
+      filename: path.basename(getCallerFile()),
+      fn: getCallerFunction(),
+      lineNumnber: getLineNumber()
     }
   }
 }
