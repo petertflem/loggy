@@ -7,17 +7,6 @@ var options = {
   targetLoggingModules: [{ name: 'console' }]
 };
 
-/*
-  Example settings:
-  {
-    name: 'websockets',
-    settings: {
-      host: 'ws://localhost:5000',
-      keepAlive: true
-    }
-  }
-*/
-
 /* I want to read a config file from root */
 
 module.exports.initialize = function (newOptions) {

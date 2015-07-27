@@ -1,13 +1,23 @@
 var http = require("http");
+var enforceHttpRequestOrder = true;
+var canSendRequest = true;
+var messageQueue = [];
 
 module.exports.pipe = function(message) {
-  send(message);
+  enforceHttpRequestOrder ? messageQueue.push(message) : send(message);
+
+  if (canSendRequest && enforceHttpRequestOrder) {
+    send(messageQueue.shift());
+  }
 };
 
 function send(message) {
+  if (enforceHttpRequestOrder)
+    canSendRequest = false;
+
   var data = JSON.stringify({
     data: message,
-    publishTargets: "logs"
+    publishTargets: 'logs'
   });
 
   var options = {
@@ -21,7 +31,15 @@ function send(message) {
     }
   };
 
-  var req = http.request(options);
+  var req = http.request(options, httpRequestCallback);
+
   req.write(data);
   req.end();
+}
+
+function httpRequestCallback (response) {
+  if (enforceHttpRequestOrder) {
+    canSendRequest = true;
+    messageQueue.length > 0 && send(messageQueue.shift());
+  }
 }
