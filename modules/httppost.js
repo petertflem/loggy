@@ -21,8 +21,8 @@ function send(message) {
   });
 
   var options = {
-    hostname: 'localhost',
-    port: 5000,
+    hostname: 'knowtify-web-app.herokuapp.com',
+    port: 80,
     path: '/api/logs',
     method: 'POST',
     headers: {
