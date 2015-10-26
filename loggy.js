@@ -97,7 +97,7 @@ function getNewLogEntry (message, logLevel) {
       npmModule: process.env.npm_package_name || '',
       filename: path.basename(getCallerFile()),
       fn: getCallerFunction(),
-      lineNumnber: getLineNumber()
+      lineNumber: getLineNumber()
     }
   }
 }

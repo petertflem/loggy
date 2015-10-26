@@ -1,5 +1,5 @@
 module.exports.pipe = function (data) {
-  console.log('[' + data.timestamp + '][' + data.level + ']\
+  console.log('[' + data.date + ' ' + data.time + '][' + data.logLevel + ']\
 [' + data.origin.npm_module + '][' + data.origin.filename + ']\
-[' + data.origin.function + '()][' + data.origin.lineNumnber + '] ' + data.message);
+[' + data.origin.fn + '()][' + data.origin.lineNumnber + '] ' + data.message);
 }
